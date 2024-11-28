@@ -1,3 +1,5 @@
 static/cat.png
 templates/test.html
 templates/about.html
+/templates/translator.html
+/translator.py
