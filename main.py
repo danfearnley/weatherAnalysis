@@ -38,6 +38,7 @@ import numpy as np
     # print(df.plot(x="    DATE", y="Celsius", figsize=(15,3)))
 
 app = Flask(__name__)
+stationNames = pd.read_csv("data_small/stations.txt", skiprows=17) # this will be the only station name called, will only be this file
 
 @app.route("/")
 def home():
@@ -49,8 +50,7 @@ def about(station, date):
     df = pd.read_csv(f"data_small/TG_STAID{stationID}.txt", skiprows=20, parse_dates=["    DATE"])
     temp = df.loc[df["    DATE"] == date]['   TG'].squeeze() / 10
     print(temp)
-    
-    stationNames = pd.read_csv("data_small/stations.txt", skiprows=17)
+
     stationNames["STAID"] = stationNames["STAID"].astype(str) # data mismatch - convert entire column to string
     stationName = stationNames.loc[stationNames["STAID"] == station, "STANAME                                 "].iloc[0]
     
