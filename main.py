@@ -51,7 +51,6 @@ def about(station, date):
     stationID = str(station).zfill(6) # pads out to 6 digits with leading 0, needs to be converted to string first
     df = pd.read_csv(f"data_small/TG_STAID{stationID}.txt", skiprows=20, parse_dates=["    DATE"])
     temp = df.loc[df["    DATE"] == date]['   TG'].squeeze() / 10
-    print(temp)
 
     stationNames["Station ID"] = stationNames["Station ID"].astype(str) # data mismatch - convert entire column to string
     stationName = stationNames.loc[stationNames["Station ID"] == station, "Station Name"].iloc[0]
@@ -61,6 +60,20 @@ def about(station, date):
             "temperature": temp,
             "stationName": stationName.strip().title()}
 
+@app.route("/api/v1/<station>/")
+def allData(station):
+    stationID = str(station).zfill(6) # pads out to 6 digits with leading 0, needs to be converted to string first
+    df = pd.read_csv(f"data_small/TG_STAID{stationID}.txt", skiprows=20, parse_dates=["    DATE"])
+    result = df.to_dict(orient="records") # this gives a list of dicts with all dates and its temp
+    return result
+
+@app.route("/api/v1/annual/<station>/<year>/")
+def annual(station, year):
+    stationID = str(station).zfill(6) # pads out to 6 digits with leading 0, needs to be converted to string first
+    df = pd.read_csv(f"data_small/TG_STAID{stationID}.txt", skiprows=20)
+    df["    DATE"] = df["    DATE"].astype(str)
+    result = df[df["    DATE"].str.startswith(str(year))].to_dict(orient="records")
+    return result
 
 if __name__ == "__main__":
     app.run(debug=True)
