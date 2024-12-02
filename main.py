@@ -39,10 +39,12 @@ import numpy as np
 
 app = Flask(__name__)
 stationNames = pd.read_csv("data_small/stations.txt", skiprows=17) # this will be the only station name called, will only be this file
+stationNames = stationNames[["STAID","STANAME                                 "]]
+stationNames.columns = ["Station ID", "Station Name"]
 
 @app.route("/")
 def home():
-    return render_template("home.html")
+    return render_template("home.html", data=stationNames.to_html())
 
 @app.route("/api/v1/<station>/<date>/")
 def about(station, date):
@@ -51,8 +53,8 @@ def about(station, date):
     temp = df.loc[df["    DATE"] == date]['   TG'].squeeze() / 10
     print(temp)
 
-    stationNames["STAID"] = stationNames["STAID"].astype(str) # data mismatch - convert entire column to string
-    stationName = stationNames.loc[stationNames["STAID"] == station, "STANAME                                 "].iloc[0]
+    stationNames["Station ID"] = stationNames["Station ID"].astype(str) # data mismatch - convert entire column to string
+    stationName = stationNames.loc[stationNames["Station ID"] == station, "Station Name"].iloc[0]
     
     return {"stationID": station,
             "date": date,
